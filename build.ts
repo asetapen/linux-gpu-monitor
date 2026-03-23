@@ -10,7 +10,7 @@ const target = Deno.args[1];
 
 try {
 	await Deno.remove(outDir, { recursive: true });
-} catch (error: any) {
+} catch (error: unknown) {
 	if (!(error instanceof Deno.errors.NotFound)) {
 		throw error;
 	}
