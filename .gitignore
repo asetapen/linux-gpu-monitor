@@ -1,0 +1,8 @@
+target/
+
+assets/x86_64-unknown-linux-gnu/
+assets/aarch64-unknown-linux-gnu/
+
+Cargo.lock
+*.zip
+
