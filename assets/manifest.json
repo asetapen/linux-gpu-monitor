@@ -1,0 +1,60 @@
+{
+	"Name": "GPU Monitor",
+	"Description": "Display GPU utilization, temperature, memory, and power on your Stream Deck",
+	"Author": "asetapen",
+	"Version": "1.0.0",
+	"CodePaths": {
+		"x86_64-unknown-linux-gnu": "x86_64-unknown-linux-gnu/bin/linux-gpu-monitor",
+		"aarch64-unknown-linux-gnu": "aarch64-unknown-linux-gnu/bin/linux-gpu-monitor"
+	},
+	"CodePathLin": "x86_64-unknown-linux-gnu/bin/linux-gpu-monitor",
+	"Icon": "icon",
+	"Category": "GPU Monitor",
+	"OS": [
+		{
+			"Platform": "linux"
+		}
+	],
+	"Actions": [
+		{
+			"Icon": "icon",
+			"Name": "GPU Utilization",
+			"States": [{ "Title": "GPU\n--%", "FontSize": 14 }],
+			"Controllers": ["Keypad"],
+			"SupportedInMultiActions": false,
+			"Tooltip": "Display GPU utilization percentage",
+			"UUID": "linux-gpu-monitor.utilization",
+			"PropertyInspectorPath": "propertyInspector/gpuMonitor.html"
+		},
+		{
+			"Icon": "icon",
+			"Name": "GPU Temperature",
+			"States": [{ "Title": "Temp\n--\u00b0C", "FontSize": 14 }],
+			"Controllers": ["Keypad"],
+			"SupportedInMultiActions": false,
+			"Tooltip": "Display GPU temperature",
+			"UUID": "linux-gpu-monitor.temperature",
+			"PropertyInspectorPath": "propertyInspector/gpuMonitor.html"
+		},
+		{
+			"Icon": "icon",
+			"Name": "GPU Memory",
+			"States": [{ "Title": "VRAM\n--/--G", "FontSize": 12 }],
+			"Controllers": ["Keypad"],
+			"SupportedInMultiActions": false,
+			"Tooltip": "Display GPU memory (VRAM) usage",
+			"UUID": "linux-gpu-monitor.memory",
+			"PropertyInspectorPath": "propertyInspector/gpuMonitor.html"
+		},
+		{
+			"Icon": "icon",
+			"Name": "GPU Power",
+			"States": [{ "Title": "Power\n--W", "FontSize": 14 }],
+			"Controllers": ["Keypad"],
+			"SupportedInMultiActions": false,
+			"Tooltip": "Display GPU power draw",
+			"UUID": "linux-gpu-monitor.power",
+			"PropertyInspectorPath": "propertyInspector/gpuMonitor.html"
+		}
+	]
+}
