@@ -17,16 +17,15 @@ THIS_DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null && pwd )"
 TARGET="x86_64-unknown-linux-gnu"
 PLUGIN_DIR="${HOME}/.config/opendeck/plugins/linux-gpu-monitor.sdPlugin"
 
-cargo build --release --target "${TARGET}"
+cargo build --release --target "${TARGET}" --manifest-path "${THIS_DIR}/Cargo.toml"
 mkdir -p "${THIS_DIR}/assets/${TARGET}/bin"
 cp "${THIS_DIR}/target/${TARGET}/release/linux-gpu-monitor" "${THIS_DIR}/assets/${TARGET}/bin/"
 
 # Create release zip
-cd "${THIS_DIR}"
-rm -rf linux-gpu-monitor.sdPlugin
-cp -r assets linux-gpu-monitor.sdPlugin
-zip -r linux-gpu-monitor.zip linux-gpu-monitor.sdPlugin
-rm -rf linux-gpu-monitor.sdPlugin
+rm -rf "${THIS_DIR}/linux-gpu-monitor.sdPlugin"
+cp -r "${THIS_DIR}/assets" "${THIS_DIR}/linux-gpu-monitor.sdPlugin"
+zip -r "${THIS_DIR}/linux-gpu-monitor.zip" "${THIS_DIR}/linux-gpu-monitor.sdPlugin"
+rm -rf "${THIS_DIR}/linux-gpu-monitor.sdPlugin"
 echo "Created linux-gpu-monitor.zip"
 
 # Install to local OpenDeck plugins directory

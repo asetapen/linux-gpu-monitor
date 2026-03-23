@@ -1,5 +1,6 @@
 [package]
 name = "linux-gpu-monitor"
+version = "1.0.0"
 authors = ["asetapen"]
 license = "MIT"
 edition = "2024"
