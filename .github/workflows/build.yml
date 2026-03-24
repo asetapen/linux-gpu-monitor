@@ -1,9 +1,15 @@
-name: Build
+name: "Build and release"
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  PLUGIN_NAME: linux-gpu-monitor
 
 jobs:
   build:
@@ -14,12 +20,8 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-24.04
-            build-ext: ""
-            artifact-ext: -x86_64-unknown-linux-gnu
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-24.04-arm
-            build-ext: ""
-            artifact-ext: -aarch64-unknown-linux-gnu
 
     steps:
       - name: Checkout
@@ -38,18 +40,63 @@ jobs:
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Rename binary and output artifact name
-        id: rename
-        shell: bash
+      - name: Rename binary
         run: |
           PACKAGE_NAME=$(cargo metadata --no-deps --format-version 1 | jq -r ".packages[0].name")
-          ARTIFACT_NAME="${PACKAGE_NAME}${{ matrix.artifact-ext }}"
-          mv "target/${{ matrix.target }}/release/${PACKAGE_NAME}${{ matrix.build-ext }}" "$ARTIFACT_NAME"
-          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+          cp "target/${{ matrix.target }}/release/${PACKAGE_NAME}" "${PACKAGE_NAME}-${{ matrix.target }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.rename.outputs.artifact_name }}
-          path: ${{ steps.rename.outputs.artifact_name }}
+          name: binary-${{ matrix.target }}
+          path: ${{ env.PLUGIN_NAME }}-${{ matrix.target }}
           compression-level: 0
+
+  package:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+          merge-multiple: true
+
+      - name: Assemble plugin directory
+        run: |
+          PLUGIN_DIR="${PLUGIN_NAME}.sdPlugin"
+          mkdir -p "${PLUGIN_DIR}"
+          cp -r assets/* "${PLUGIN_DIR}/"
+          for binary in binaries/${PLUGIN_NAME}-*; do
+            TARGET="${binary#binaries/${PLUGIN_NAME}-}"
+            mkdir -p "${PLUGIN_DIR}/${TARGET}/bin"
+            cp "${binary}" "${PLUGIN_DIR}/${TARGET}/bin/${PLUGIN_NAME}"
+          done
+          zip -r "${PLUGIN_NAME}.zip" "${PLUGIN_DIR}"
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-package
+          path: ${{ env.PLUGIN_NAME }}.zip
+
+  release:
+    needs: package
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-package
+          path: dist
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*

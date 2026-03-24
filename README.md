@@ -24,3 +24,12 @@ Requires [Rust](https://www.rust-lang.org/tools/install).
 ```
 
 After installing, reload the plugin in OpenDeck to apply changes.
+
+## Releasing
+
+Pushing a version tag triggers the CI to build for both x86_64 and aarch64, package the plugin, and create a GitHub release with the `.zip` attached.
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
